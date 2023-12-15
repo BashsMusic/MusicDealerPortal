@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Music Dealer Portal</title>
+  <link rel="icon" type="image/x-icon" href="Logos/MDP.jpg">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Arial', sans-serif;
+      margin: 0; /* Remove default body margin */
+      padding: 0; /* Remove default body padding */
+      background-image: url('Logos/BG.jpg');
+      background-repeat: repeat;
+      background-size: 500px 500px; /* Set the size of each pattern */
+
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 15px;
+      max-width: 800px;
+      margin: 30px auto;
+    }
+
+    .box {
+      position: relative;
+      background-color: #ffffff;
+      padding: 20px;
+      text-align: center;
+      border-radius: 10px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .box:hover {
+      transform: scale(1.1);
+    }
+
+    .box img {
+      max-width: 100%;
+      max-height: 100%;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .box p {
+      margin-top: 10px;
+    }
+
+    .search-bar {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .search-input {
+      padding: 10px;
+      width: 70%;
+      border: 1px solid #ced4da;
+      border-radius: 5px;
+      box-sizing: border-box;
+      margin-bottom: 10px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    .search-btn {
+      padding: 10px;
+      background-color: #007bff;
+      color: #ffffff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .search-btn:hover {
+      background-color: #0056b3;
+    }
+
+    .copyright {
+      text-align: center;
+      margin-top: 50px;
+      margin-bottom: 50px;
+      font-size: 12px;
+      color: #6c757d;
+    }
+    #thehidden{color: #f8f9fa;}
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="search-bar">
+      <input type="text" v-model="search" placeholder="Search...">
+    </div>
+
+    <div class="container">
+      <div v-for="(site, index) in filteredSites" :key="index" class="box" @click="openLink(site.link)">
+        <img :src="site.image" alt="Site Image">
+        <p>{{ site.text }}</p>
+      </div>
+    </div>
+
+    <div class="copyright">
+      &copy; 2024 Adrian - Bashs Music - Music Dealer Portal. All rights reserved.
+      <p id="thehidden">Quark: I have a talent for business. Odo: And I have a talent for seeing through people. Quark: That's not a talent. It's a parlor trick.</p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+  <script>
+    new Vue({
+      el: '#app',
+      data: {
+        search: '',
+        sites: [
+          { image: 'Logos/yamaha.jpg', text: 'Yamaha', link: 'https://community.au.yamaha.com/dealer/s/login/?ec=302&startURL=%2Fdealer%2Fs%2F' },
+          { image: 'Logos/Fender.jpg', text: 'Fender', link: 'https://dealer.fender.com/login' },
+          { image: 'Logos/CMI.jpg', text: 'CMI', link: 'https://cmi.com.au/stocklist' },
+          { image: 'Logos/AVEcorp.jpg', text: 'AVEcorp', link: 'https://www.avecorp.com.au/' },
+          { image: 'Logos/AMS.jpg', text: 'AMS', link: 'https://www.austmusic.com.au/ams-dealer-resource-login/' },
+          { image: 'Logos/australismusic.jpg', text: 'Australis Music', link: 'https://www.australismusic.com.au/stocklist' },
+          { image: 'Logos/Jands.jpg', text: 'Jands', link: 'https://www.jands.com.au/login' },
+          { image: 'Logos/SKB.jpg', text: 'SKB', link: 'https://www.skbcases.com/' },
+          { image: 'Logos/Vox.jpg', text: 'Vox', link: 'https://voxamps.com/' },
+          { image: 'Logos/ProMusic.jpg', text: 'Pro Music', link: 'https://www.promusicaustralia.com.au/' },
+          { image: 'Logos/Ibanez.jpg', text: 'Ibanez', link: 'https://cs.hoshinogakki.co.jp/pcw.nsf' },
+          { image: 'Logos/Roland.jpg', text: 'Roland', link: 'https://dealer.rolandcorp.com.au/login?redirect=DjeQGBwxcxSti0pjBA1Ck0p-r_kJkE-LbZokXXHSjRTMAXObGc7aZ91qMh7KX7_UfekRDG4a' },
+          { image: 'Logos/DImusic.jpg', text: 'DI Music', link: 'https://www.di-musiconline.com.au/shop/' },
+          { image: 'Logos/Dynamic.jpg', text: 'Dynamic', link: 'https://www.dynamicmusic.com.au/dealerlogin.asp' },
+          { image: 'Logos/CMC.jpg', text: 'CMC', link: 'https://www.cmcmusic.com.au/home' },
+          { image: 'Logos/Daddario.jpg', text: 'Daddario', link: 'https://www.daddario.com/' },
+          { image: 'Logos/BashsMusic.jpg', text: 'Bashs Music', link: 'https://www.bashsmusic.com.au/' },
+          { image: 'Logos/TMS.jpg', text: 'TMS', link: 'https://www.themusicshopwesternsuburbs.com.au/' },
+
+        ],
+      },
+      computed: {
+        filteredSites() {
+          return this.sites.filter(site => site.text.toLowerCase().includes(this.search.toLowerCase()));
+        },
+      },
+      methods: {
+        openLink(link) {
+          window.open(link, '_blank');
+        },
+      },
+    });
+  </script>
+</body>
+
+</html>
