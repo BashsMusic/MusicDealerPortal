@@ -20,6 +20,7 @@
       background-image: url('Logos/BG.jpg');
       background-repeat: repeat;
       background-size: 500px 500px; /* Set the size of each pattern */
+      /* cursor: url('Logos/MOUSE.png'), auto; */
 
     }
 
@@ -44,6 +45,7 @@
 
     .box:hover {
       transform: scale(1.1);
+      font-weight: bold;
     }
 
     .box img {
@@ -55,6 +57,7 @@
 
     .box p {
       margin-top: 10px;
+      margin-bottom: 0px;
     }
 
     .search-bar {
@@ -100,6 +103,14 @@
       color: #6c757d;
     }
     #thehidden{color: #f8f9fa;}
+    h5{    font-size: 12px;}
+    button, input {
+    overflow: visible;
+    border: 0;
+    box-shadow: 0 0 15px 4px rgba(0,0,0,0.06);
+    padding: 10px;
+    min-width: 333px;
+}
   </style>
 </head>
 
@@ -113,6 +124,9 @@
       <div v-for="(site, index) in filteredSites" :key="index" class="box" @click="openLink(site.link)">
         <img :src="site.image" alt="Site Image">
         <p>{{ site.text }}</p>
+        <!-- <h5>{{ site.email }}</h5>
+        <h5>{{ site.phone }}</h5> -->
+
       </div>
     </div>
 
@@ -145,6 +159,11 @@
           { image: 'Logos/Dynamic.jpg', text: 'Dynamic', link: 'https://www.dynamicmusic.com.au/dealerlogin.asp' },
           { image: 'Logos/CMC.jpg', text: 'CMC', link: 'https://www.cmcmusic.com.au/home' },
           { image: 'Logos/Daddario.jpg', text: 'Daddario', link: 'https://www.daddario.com/' },
+          { image: 'Logos/Elfa.jpg', text: 'Electric Factory / Elfa', link: 'https://www.elfa.com.au/' },
+          // { image: 'Logos/PioneerDJ.jpg', text: 'Pioneer DJ', link: 'https://www.pioneerdj.com/en-au/account/login/?relPath=en-au%2F' },
+          // { image: 'Logos/Hohner.jpg', text: 'Hohner', link: 'https://www.hohner.de/' },
+          { image: 'Logos/Gator.jpg', text: 'Gator', link: 'https://gatorco.com/my-account/' },
+          { image: 'Logos/Hercules_Stands.jpg', text: 'Hercules Stands', link: 'https://www.herculesstands.com/' },
           { image: 'Logos/BashsMusic.jpg', text: 'Bashs Music', link: 'https://www.bashsmusic.com.au/' },
           { image: 'Logos/TMS.jpg', text: 'TMS', link: 'https://www.themusicshopwesternsuburbs.com.au/' },
 
