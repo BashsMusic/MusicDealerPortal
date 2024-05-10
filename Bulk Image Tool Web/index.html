@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Image Tool Web - By Adrian</title>
+    <link rel="icon" type="image/x-icon" href="images/icon.png">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #1B1B1B; /* Eerie Black */
+            color: #e2e2e2; /* Pastel white */
+            margin: 0;
+        padding: 0;
+        background-image: url('images/tng.gif'); /* Replace 'your-gif-url.gif' with the URL of your GIF image */
+        background-size: cover;
+        background-position: center;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #1b1b1ba1;; /* Eerie Black */
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #cfcfcf; /* Pastel Red */
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="file"],
+        select,
+        input[type="text"],
+        input[type="number"],
+        input[type="color"],
+        button {
+            margin-bottom: 10px;
+            padding: 8px;
+            border: 2.2px solid #F8665E; /* Pastel Red */
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #1B1B1B; /* Eerie Black */
+            color: #F8665E; /* Pastel Red */
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #F8665E; /* Pastel Red */
+            color: white;
+        }
+
+        #result {
+            margin-top: 20px;
+        }
+
+        #result a {
+            display: block;
+            margin-top: 10px;
+            text-decoration: none;
+            color: #F8665E; /* Pastel Red */
+            font-weight: bold;
+        }
+
+        #result a:hover {
+            text-decoration: underline;
+        }
+        .zip-checkbox {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.zip-checkbox label {
+    margin-right: 10px;
+}
+
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="container">
+            <h1>Image Converter</h1>
+            <form @submit.prevent="convertImages">
+                <label for="fileInput">Select Folder:</label>
+                <input type="file" id="fileInput" multiple webkitdirectory @change="onFileChange">
+                <label for="formatSelect">Select Format:</label>
+                <select id="formatSelect" v-model="selectedFormat">
+                    <option value="webp">WebP</option>
+                    <option value="png">PNG</option>
+                    <option value="jpg">JPG</option>
+                </select>
+                <label for="dimensionsInput">Canvas Size:</label>
+                <input type="text" id="dimensionsInput" placeholder="e.g., 1000x1000" v-model="dimensions">
+                <label for="prefixInput">Name Prefix:</label>
+                <input type="text" id="prefixInput" v-model="prefix">
+                <label for="scaleInput">Scale (%):</label>
+                <input type="number" id="scaleInput" min="0" max="100" value="100" v-model="scale">
+                <label for="backgroundColorInput">Background Color:</label>
+                <input type="color" id="backgroundColorInput" v-model="backgroundColor">
+                <div class="zip-checkbox">
+                    <label for="zipCheckbox">Download as ZIP:</label>
+                    <input type="checkbox" id="zipCheckbox" v-model="zip">
+                </div>                
+                <h5>Made By Adrian</h5>
+                <button type="submit">Convert</button>
+            </form>
+            <div id="result">
+                <div v-for="(downloadLink, index) in downloadLinks" :key="index">
+                    <a :href="downloadLink.url" :download="downloadLink.fileName">{{ downloadLink.text }}</a>
+                </div>
+                <a v-if="zip && downloadLinks.length > 0" href="#" @click="createZip">Download All as ZIP</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                files: [],
+                selectedFormat: 'webp',
+                dimensions: '',
+                prefix: '',
+                scale: 100,
+                backgroundColor: '#ffffff',
+                zip: false,
+                downloadLinks: [],
+                modifiedImages: [] // Array to store modified image blobs
+            },
+            methods: {
+                onFileChange(event) {
+                    this.files = Array.from(event.target.files);
+                },
+                convertImages() {
+                    if (this.files.length === 0) {
+                        alert('Please select a folder containing images.');
+                        return;
+                    }
+
+                    const dimensionsArray = this.dimensions.split('x');
+                    const canvasWidth = parseInt(dimensionsArray[0]);
+                    const canvasHeight = parseInt(dimensionsArray[1]);
+
+                    if (isNaN(canvasWidth) || isNaN(canvasHeight)) {
+                        alert('Invalid dimensions. Please enter in the format "width x height".');
+                        return;
+                    }
+
+                    if (isNaN(parseInt(this.scale)) || parseInt(this.scale) <= 0 || parseInt(this.scale) > 100) {
+                        alert('Invalid scale. Please enter a number between 1 and 100.');
+                        return;
+                    }
+
+                    this.downloadLinks = [];
+                    this.modifiedImages = [];
+
+                    this.files.forEach(file => {
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                            const img = new Image();
+                            img.src = reader.result;
+                            img.onload = () => {
+                                const scaleFactor = this.scale / 100;
+                                const canvas = document.createElement('canvas');
+                                const ctx = canvas.getContext('2d');
+
+                                // Calculate scaled dimensions
+                                const scaledWidth = canvasWidth * scaleFactor;
+                                const scaledHeight = canvasHeight * scaleFactor;
+
+                                // Calculate positioning for centering
+                                const offsetX = (canvasWidth - scaledWidth) / 2;
+                                const offsetY = (canvasHeight - scaledHeight) / 2;
+
+                                // Set canvas size
+                                canvas.width = canvasWidth;
+                                canvas.height = canvasHeight;
+
+                                // Fill background color
+                                ctx.fillStyle = this.backgroundColor;
+                                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                                // Draw the image onto the canvas with scaling
+                                ctx.drawImage(img, offsetX, offsetY, scaledWidth, scaledHeight);
+
+                                // Convert canvas to blob
+                                canvas.toBlob(blob => {
+                                    const modifiedFileName = this.prefix + file.name.replace(/\.[^/.]+$/, '') + '.' + this.selectedFormat;
+                                    const downloadLink = document.createElement('a');
+                                    downloadLink.href = URL.createObjectURL(blob);
+                                    downloadLink.download = modifiedFileName;
+                                    downloadLink.textContent = 'Download ' + modifiedFileName;
+
+                                    // Push modified image blob to the array
+                                    this.modifiedImages.push({ fileName: modifiedFileName, blob: blob });
+
+                                    // Push download link to the array
+                                    this.downloadLinks.push({ url: downloadLink.href, fileName: modifiedFileName, text: downloadLink.textContent });
+                                }, 'image/' + this.selectedFormat);
+                            };
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                },
+                createZip() {
+                    if (this.zip && this.modifiedImages.length > 0) {
+                        const zip = new JSZip();
+                        const promises = this.modifiedImages.map(image => {
+                            zip.file(image.fileName, image.blob);
+                        });
+
+                        Promise.all(promises).then(() => {
+                            zip.generateAsync({ type: 'blob' }).then(content => {
+                                const downloadLink = document.createElement('a');
+                                downloadLink.href = URL.createObjectURL(content);
+                                downloadLink.download = 'images.zip';
+                                downloadLink.click();
+                            });
+                        });
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
