@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audio Cable Finder</title>
+  <link rel="icon" type="image/x-icon" href="Connectors/ico.png">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #app {
+      background-color: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      width: 400px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .selection-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .connector-select {
+      width: 45%;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    .connector-img {
+      width: 176px;
+      height: 176px;
+      object-fit: contain;
+      margin-top: 10px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    button:disabled {
+      background-color: #ccc;
+    }
+
+    .result {
+      margin-top: 30px;
+      font-size: 18px;
+      color: #444;
+      border-top: 1px solid #eee;
+      padding-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <h2>Find Your Audio Cable</h2>
+
+    <div class="selection-container">
+      <div class="connector-select">
+        <select v-model="leftConnector">
+          <option disabled value="">Select Left Connector</option>
+          <option v-for="(connector, index) in connectors" :key="index" :value="connector.name">{{ connector.name }}</option>
+        </select>
+        <img v-if="leftConnector" :src="getConnectorImage(leftConnector)" alt="Left Connector Image" class="connector-img">
+      </div>
+
+      <div class="connector-select">
+        <select v-model="rightConnector">
+          <option disabled value="">Select Right Connector</option>
+          <option v-for="(connector, index) in connectors" :key="index" :value="connector.name">{{ connector.name }}</option>
+        </select>
+        <img v-if="rightConnector" :src="getConnectorImage(rightConnector)" alt="Right Connector Image" class="connector-img">
+      </div>
+    </div>
+
+    <button :disabled="!leftConnector || !rightConnector" @click="findCable">Find Cable</button>
+
+    <div class="result" v-if="product">
+      <h3>{{ product.name }}</h3>
+      <img :src="product.image" alt="Product Image" class="connector-img" style="width: 100%;">
+      <p>{{ product.description }}</p>
+    </div>
+    <p>© 2024 Adrian - Bashs Music - Cable Finder. All rights reserved.</p>
+  </div>
+  <script src="vue@2.js"></script>
+  <script>
+    new Vue({
+      el: '#app',
+      data: {
+        connectors: [
+          { name: 'XLR', image: 'Connectors/XLR.webp' },
+          { name: '1/4 inch TRS', image: 'Connectors/1-4TRS.webp' },
+          { name: '1/4 inch TS', image: 'Connectors/1-4TS.webp' },
+          { name: 'RCA', image: 'Connectors/RCA.webp' },
+          { name: '3.5mm Jack', image: 'Connectors/3.5mmJack.webp' },
+          { name: '6.35mm Jack', image: 'Connectors/6.35mmJack.webp' },
+          { name: 'MIDI', image: 'Connectors/MIDI.webp' },
+          { name: 'SpeakON', image: 'Connectors/speakON.webp' },
+          { name: 'Banana Plug', image: 'Connectors/BananaPlug.webp' },
+          { name: 'TOSLINK', image: 'Connectors/TOSLINK.webp' },
+          { name: 'Optical', image: 'Connectors/optical.webp' },
+          { name: 'Mini XLR', image: 'Connectors/minixlr.webp' },
+          { name: 'BNC', image: 'Connectors/bnc.webp' },
+          { name: 'Phono', image: 'Connectors/phono.webp' },
+          { name: 'Ethernet', image: 'Connectors/ethernet.webp' },
+          { name: 'USB-A', image: 'Connectors/usba.webp' },
+          { name: 'USB-B', image: 'Connectors/usbb.webp' },
+          { name: 'USB-C', image: 'Connectors/usbc.webp' },
+          { name: 'Firewire', image: 'Connectors/firewire.webp' },
+          { name: 'HDMI', image: 'Connectors/hdmi.webp' }
+        ],
+        leftConnector: '',
+        rightConnector: '',
+        product: null
+      },
+      methods: {
+        getConnectorImage(connectorName) {
+          const connector = this.connectors.find(c => c.name === connectorName);
+          return connector ? connector.image : '';
+        },
+        findCable() {
+          this.product = {
+            name: `${this.leftConnector} to ${this.rightConnector} Cable`,
+            image: 'Connectors/product.webp',
+            description: `High-quality audio cable connecting ${this.leftConnector} to ${this.rightConnector}. Ideal for studio and live sound applications.`
+          };
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>
